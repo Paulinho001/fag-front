@@ -1,24 +1,23 @@
-import { NextResponse } from "next/server"
-import { mockUser } from "../../../mocks/user"
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  const { email, password } = await req.json()
+  const { email, password } = await req.json();
 
-  if (email === mockUser.email && password === mockUser.password) {
+  console.log("REQ BODY:", email, password); // DEBUG
+
+  if (email === "teste@teste.com" && password === "123456") {
     return NextResponse.json({
       success: true,
       user: {
-        id: mockUser.id,
-        email: mockUser.email,
+        id: 1,
+        name: "Usuário Teste",
+        email,
       },
-    })
+    });
   }
 
   return NextResponse.json(
-    {
-      success: false,
-      message: "Credenciais inválidas.",
-    },
+    { success: false, message: "Invalid credentials" },
     { status: 401 }
-  )
+  );
 }

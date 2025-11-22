@@ -1,14 +1,15 @@
-import { NextResponse } from "next/server"
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  const { email, password } = await req.json()
+  const body = await req.json();
 
-  // apenas retorna sucesso, sem salvar em nenhum lugar
+  // MOCK SIMPLES
   return NextResponse.json({
     success: true,
     user: {
-      id: crypto.randomUUID(),
-      email,
+      id: Date.now(),
+      name: body.name,
+      email: body.email,
     },
-  })
+  });
 }

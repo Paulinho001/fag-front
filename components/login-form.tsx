@@ -1,7 +1,5 @@
 "use client"
 
-import { useState } from "react"
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -12,43 +10,52 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { useAuth } from "@/context/AuthContext"
+import { cn } from "@/lib/utils"
 import type { LoginFormData } from "@/types/auth"
-import { useAuth } from "@/app/context/AuthContext"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
-  const { login } = useAuth()
+  const { login } = useAuth();
+  const router = useRouter(); // 👈 necessário para redirect
 
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setError(null)
-    setLoading(true)
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
 
-    const form = e.currentTarget
+    const form = e.currentTarget;
+
     const data: LoginFormData = {
       email: (form.email as any).value,
       password: (form.password as any).value,
-    }
+    };
 
     const res = await fetch("/api/login", {
       method: "POST",
       body: JSON.stringify(data),
       headers: { "Content-Type": "application/json" },
-    })
+    });
 
-    const json = await res.json()
-    setLoading(false)
+    const json = await res.json();
+    setLoading(false);
 
     if (!json.success) {
-      setError("Credenciais inválidas")
-      return
+      setError("Credenciais inválidas");
+      return;
     }
 
-    login(json.user)
-  }
+    // Salva o usuário no contexto
+    login(json.user);
 
+    // 👇 REDIRECIONA PARA O DASHBOARD
+    router.push("/dashboard");
+  } ''
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
@@ -116,8 +123,16 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
               </Field>
 
               <FieldDescription className="text-center">
-                Don&apos;t have an account? <a href="#">Sign up</a>
+                Don&apos;t have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => router.push("/signup")}
+                  className="underline underline-offset-2 text-blue-600"
+                >
+                  Sign up
+                </button>
               </FieldDescription>
+
             </FieldGroup>
           </form>
 
